@@ -1,0 +1,34 @@
+name: Daily Comic Integration Sync
+
+on:
+  # 统一由 Cloudflare Worker 边缘准点调度器通过 API 呼叫触发 (100% 杜绝排队延迟与丢任务)
+  # 支持随时在 GitHub 网页上手动点 "Run workflow" 立即触发
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Daily Sync Worker
+        env:
+          # 仅需这 1 个全量加密配置变量！在 Settings -> Secrets -> Actions 里添加
+          SYNC_CONFIG: ${{ secrets.SYNC_CONFIG }}
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python action_worker.py

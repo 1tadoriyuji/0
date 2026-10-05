@@ -1,0 +1,13 @@
+data/tmp/
+*.webp
+*.jpg
+*.jpeg
+*.png
+*.cbz
+*.zip
+data/*.db
+*.sqlite3
+*.db
+__pycache__/
+*.py[cod]
+.env
